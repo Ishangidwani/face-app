@@ -141,7 +141,6 @@ export class AppComponent implements OnInit, AfterViewInit {
     })
     const faceMatcher = new faceapi.FaceMatcher(labels, maxDescriptorDistance);
     const results = this.uploadedResults.map(fd => faceMatcher.findBestMatch(fd.descriptor.descriptor))
-    console.log(results);
     this.score.length = 0;
     results.forEach(x=>{
       this.score.push(x.distance);
