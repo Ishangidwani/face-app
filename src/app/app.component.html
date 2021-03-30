@@ -1,11 +1,73 @@
-<div class="col-6">
-    <input type="file" id="files" />
-    <canvas width="500" height="500" id="capture"></canvas>
-</div>
-<div class="col-6 video-con">
-    <div id="holder">
-        <video #video width="500" height="560" autoplay muted></video>
-        <canvas id="canvas" width="500" height="500"></canvas>
+<nav class="nav-bar">
+    <div class="head">Face App</div>
+</nav>
+<div class="col-12 row">
+    <div class="col-6 wrap-result">
+        <div class="col-12 direction-col">
+            Webcam Selfie
+            <div class="wrap-result">
+                <div *ngIf="isEvaluating">Please wait...evaluating...</div>
+                <div *ngIf="!isEvaluating && camResults.length == 0">No result found</div>
+                <mat-card class="col-2" *ngFor="let item of camResults">
+                    <mat-card-header>
+                        <mat-card-subtitle>{{item.name}}</mat-card-subtitle>
+                    </mat-card-header>
+                    <img mat-card-image [src]="item.src" alt="Photo of a {{item.name}}">
+                </mat-card>    
+            </div>
+        </div>
+        <div class="col-12 direction-col">
+            Uploaded Selfie
+            <div class="wrap-result">
+                <div *ngIf="isUploadEvaluating">Please wait...evaluating...</div>
+                <div *ngIf="!isUploadEvaluating && uploadedResults.length == 0">No result found</div>
+                <mat-card class="col-2" *ngFor="let item of uploadedResults">
+                    <mat-card-header>
+                        <mat-card-subtitle>{{item.name}}</mat-card-subtitle>
+                    </mat-card-header>
+                    <img mat-card-image [src]="item.src" alt="Photo of a {{item.name}}">
+                </mat-card>
+            </div>
+        </div>
     </div>
-    <button type="button" class="btn btn-primary" onclick="snapshot()">Capture</button>
+    <div class="col-6" hidden>
+        <canvas #cropped></canvas>
+    </div>
+    <div class="col-6 video-con" *ngIf="uploadedResults.length == 0 || camResults.length == 0">
+        <div id="holder">
+            <video #video [width]="defaultWidth" [height]="defaultHeight" autoplay muted
+                [style.display]="showWebCam ? 'none' : ''"></video>
+            <canvas class="position-absolute" #canvas [width]="defaultWidth" [height]="defaultHeight"></canvas>
+            <canvas #imageHolder [width]="defaultWidth" [height]="defaultHeight" [style.display]="showWebCam ? '' : 'none'"></canvas>
+        </div>
+        <div *ngIf="!showWebCam">
+            <button type="button" mat-raised-button (click)="detectCamFaces()">Capture</button>
+            <button type="button" mat-raised-button (click)="reset()">Reset</button>
+        </div>
+        <div *ngIf="showWebCam">
+            <div (click)="uploadFile.click()" class="d-inline">
+                <button mat-raised-button>Choose File</button>
+                <input #uploadFile (change)="upload($event)" type='file' style="display:none" />
+            </div>
+            <button type="button" mat-raised-button (click)="detectUploadFaces()">Detect</button>
+            <button type="button" mat-raised-button (click)="reset()">Reset</button>
+        </div>
+    </div>
+    <div class="col-6 video-con" *ngIf="uploadedResults.length > 0 && camResults.length > 0">
+        <mat-card *ngFor="let s of score">
+            <mat-card-content>
+              <h2 class="example-h2">Score: {{s.toFixed(2)}}</h2>
+              <mat-progress-spinner
+                  class="example-margin"
+                  [color]="color"
+                  [mode]="mode"
+                  [value]="s*100">
+              </mat-progress-spinner>
+            </mat-card-content>
+          </mat-card>          
+        <div>
+            <button type="button" mat-raised-button (click)="computeResult()">Compare</button>
+            <button type="button" mat-raised-button (click)="reset()">Reset</button>    
+        </div>
+    </div>
 </div>
