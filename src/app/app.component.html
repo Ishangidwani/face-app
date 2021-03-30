@@ -57,7 +57,7 @@
         <mat-card *ngFor="let s of score">
             <mat-card-content>
                 <h2 class="example-h2">Score: {{s.toFixed(2)}}</h2>
-                <h2 class="example-h2">{{s.toFixed(2) < 0.6 ? 'Matched': 'No Match'}}</h2>
+                <h2 class="example-h2">{{s < 0.6 ? 'Matched': 'No Match'}}</h2>
                 <mat-progress-spinner
                   class="example-margin"
                   [color]="color"
